@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XL Trading — Formation Prop Firms & Futures</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #0A1628;
+    --navy2:  #0F2040;
+    --blue:   #1B3F6E;
+    --gold:   #C9A84C;
+    --gold2:  #E8C86A;
+    --white:  #F0F4FA;
+    --gray:   #7E92AD;
+    --green:  #22C55E;
+    --red:    #EF4444;
+    --border: rgba(201,168,76,0.25);
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  section, nav, footer { position: relative; z-index: 1; }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    background: rgba(10,22,40,0.85);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+    color: var(--white);
+  }
+  .logo span { color: var(--gold); }
+  .nav-cta {
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 10px 24px;
+    border-radius: 4px;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+  .nav-cta:hover { background: var(--gold2); transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 80px 40px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid var(--border);
+    color: var(--gold);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    padding: 8px 20px;
+    border-radius: 100px;
+    margin-bottom: 36px;
+    text-transform: uppercase;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-badge::before { content: ''; width:6px; height:6px; background: var(--gold); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(44px, 7vw, 88px);
+    line-height: 1.0;
+    letter-spacing: -2px;
+    margin-bottom: 12px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero h1 em { color: var(--gold); font-style: normal; }
+  .hero-sub {
+    font-size: clamp(16px, 2.5vw, 22px);
+    color: var(--gray);
+    font-weight: 300;
+    max-width: 640px;
+    margin: 20px auto 48px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-sub strong { color: var(--white); font-weight: 500; }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 16px 40px;
+    border-radius: 4px;
+    text-decoration: none;
+    letter-spacing: 0.3px;
+    transition: all 0.25s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-primary:hover { background: var(--gold2); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(201,168,76,0.3); }
+  .btn-ghost {
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 16px 32px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.2);
+    text-decoration: none;
+    transition: all 0.25s;
+  }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  .hero-stats {
+    display: flex;
+    gap: 60px;
+    margin-top: 72px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 36px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .stat-label { font-size: 12px; color: var(--gray); letter-spacing: 1px; text-transform: uppercase; margin-top: 6px; }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── MARQUEE ── */
+  .marquee-wrap {
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+    background: rgba(201,168,76,0.04);
+  }
+  .marquee {
+    display: flex;
+    gap: 60px;
+    animation: marquee 22s linear infinite;
+    width: max-content;
+  }
+  .marquee-item {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .marquee-item::after { content: '◆'; font-size: 8px; opacity: 0.5; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ── SECTIONS COMMUNES ── */
+  .section { padding: 100px 60px; max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(32px, 4vw, 52px);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+  }
+  .section-title em { color: var(--gold); font-style: normal; }
+  .section-desc { color: var(--gray); font-size: 17px; max-width: 560px; line-height: 1.8; }
+
+  /* ── POUR QUI ── */
+  .forqui-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 60px;
+  }
+  .forqui-card {
+    background: rgba(15,32,64,0.6);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 32px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    transition: border-color 0.3s;
+  }
+  .forqui-card:hover { border-color: var(--gold); }
+  .forqui-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+  .forqui-text strong { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; display: block; margin-bottom: 8px; }
+  .forqui-text span { color: var(--gray); font-size: 14px; line-height: 1.7; }
+
+  /* ── CE QUE TU VAS APPRENDRE ── */
+  .learn-section { background: rgba(15,32,64,0.4); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .learn-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    margin-top: 60px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .learn-item {
+    padding: 32px 36px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    transition: background 0.3s;
+  }
+  .learn-item:hover { background: rgba(201,168,76,0.05); }
+  .learn-item:nth-child(2n) { border-right: none; }
+  .learn-item:nth-last-child(-n+2) { border-bottom: none; }
+  .learn-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 48px;
+    color: rgba(201,168,76,0.12);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .learn-item h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    margin-bottom: 10px;
+    color: var(--white);
+  }
+  .learn-item p { color: var(--gray); font-size: 14px; line-height: 1.7; }
+  .learn-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: rgba(201,168,76,0.1);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+  }
+
+  /* ── OFFRES ── */
+  .offers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    margin-top: 64px;
+    align-items: start;
+  }
+  .offer-card {
+    background: rgba(15,32,64,0.7);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 40px 32px;
+    position: relative;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .offer-card:hover { transform: translateY(-4px); }
+  .offer-card.featured {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.06);
+    transform: scale(1.03);
+  }
+  .offer-card.featured:hover { transform: scale(1.03) translateY(-4px); }
+  .offer-badge {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 20px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+  .offer-level {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .offer-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  .offer-desc { color: var(--gray); font-size: 14px; margin-bottom: 32px; line-height: 1.7; }
+  .offer-price {
+    margin-bottom: 32px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .price-amount {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 52px;
+    color: var(--white);
+    line-height: 1;
+  }
+  .price-currency {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--gold);
+    vertical-align: super;
+    margin-right: 4px;
+  }
+  .price-note { font-size: 13px; color: var(--gray); margin-top: 8px; }
+  .offer-features { list-style: none; margin-bottom: 36px; display: flex; flex-direction: column; gap: 12px; }
+  .offer-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+  .offer-features li::before {
+    content: '✓';
+    color: var(--green);
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    background: rgba(34,197,94,0.1);
+    width: 20px; height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  .offer-features li strong { color: var(--white); font-weight: 500; }
+  .btn-offer {
+    width: 100%;
+    text-align: center;
+    padding: 14px;
+    border-radius: 6px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-decoration: none;
+    display: block;
+  }
+  .btn-offer-gold { background: var(--gold); color: var(--navy); }
+  .btn-offer-gold:hover { background: var(--gold2); box-shadow: 0 8px 30px rgba(201,168,76,0.35); }
+  .btn-offer-ghost { background: transparent; color: var(--white); border: 1px solid rgba(255,255,255,0.2); }
+  .btn-offer-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── ABOUT ── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 80px;
+    align-items: center;
+    margin-top: 60px;
+  }
+  .about-visual {
+    background: rgba(15,32,64,0.6);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 48px 36px;
+    text-align: center;
+  }
+  .about-avatar {
+    width: 100px; height: 100px;
+    background: linear-gradient(135deg, var(--gold), var(--blue));
+    border-radius: 50%;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 36px;
+    color: var(--navy);
+  }
+  .about-name { font-family:'Syne',sans-serif; font-weight:800; font-size:22px; margin-bottom:6px; }
+  .about-title-tag { color:var(--gold); font-size:13px; margin-bottom:24px; }
+  .about-badges { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:24px; }
+  .badge {
+    background: rgba(201,168,76,0.1);
+    border: 1px solid var(--border);
+    color: var(--gold);
+    font-family:'Syne',sans-serif;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:1px;
+    padding: 6px 14px;
+    border-radius:100px;
+    text-transform:uppercase;
+  }
+  .about-content h2 { margin-bottom:24px; }
+  .about-content p { color:var(--gray); font-size:16px; line-height:1.9; margin-bottom:20px; }
+  .about-content p strong { color:var(--white); font-weight:500; }
+  .about-checkpoints { list-style:none; margin-top:28px; display:flex; flex-direction:column; gap:14px; }
+  .about-checkpoints li {
+    display:flex;
+    gap:14px;
+    font-size:15px;
+    color:var(--gray);
+    align-items:center;
+  }
+  .about-checkpoints li span { color:var(--gold); font-size:18px; }
+
+  /* ── FAQ ── */
+  .faq-list { margin-top:56px; display:flex; flex-direction:column; gap:2px; }
+  .faq-item {
+    border: 1px solid var(--border);
+    border-radius:6px;
+    overflow:hidden;
+    margin-bottom:8px;
+    transition: border-color 0.3s;
+  }
+  .faq-item:hover { border-color: rgba(201,168,76,0.5); }
+  .faq-q {
+    width:100%;
+    background:rgba(15,32,64,0.6);
+    border:none;
+    color:var(--white);
+    text-align:left;
+    padding:22px 28px;
+    font-family:'DM Sans',sans-serif;
+    font-size:16px;
+    font-weight:500;
+    cursor:pointer;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+  }
+  .faq-q .arrow { color:var(--gold); font-size:20px; transition:transform 0.3s; flex-shrink:0; }
+  .faq-q.open .arrow { transform:rotate(45deg); }
+  .faq-a { 
+    display:none; 
+    padding:0 28px 24px;
+    background:rgba(15,32,64,0.4);
+    color:var(--gray);
+    font-size:15px;
+    line-height:1.8;
+  }
+  .faq-a.open { display:block; }
+
+  /* ── CTA FINAL ── */
+  .cta-final {
+    text-align:center;
+    padding:120px 40px;
+    position:relative;
+    overflow:hidden;
+  }
+  .cta-final::before {
+    content:'';
+    position:absolute;
+    inset:0;
+    background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(201,168,76,0.1) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .cta-final h2 {
+    font-family:'Syne',sans-serif;
+    font-weight:800;
+    font-size:clamp(36px,5vw,64px);
+    line-height:1.1;
+    letter-spacing:-1.5px;
+    margin-bottom:20px;
+  }
+  .cta-final h2 em { color:var(--gold); font-style:normal; }
+  .cta-final p { color:var(--gray); font-size:18px; margin-bottom:48px; max-width:500px; margin-left:auto; margin-right:auto; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top:1px solid var(--border);
+    padding:40px 60px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:var(--gray);
+    font-size:13px;
+  }
+  footer .logo-f { font-family:'Syne',sans-serif; font-weight:800; font-size:18px; color:var(--white); }
+  footer .logo-f span { color:var(--gold); }
+  .disclaimer {
+    background: rgba(201,168,76,0.05);
+    border: 1px solid var(--border);
+    border-radius:6px;
+    padding:20px 28px;
+    color:var(--gray);
+    font-size:12px;
+    line-height:1.7;
+    max-width:700px;
+    margin:0 auto 48px;
+    text-align:center;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding:16px 24px; }
+    .section { padding:60px 24px; }
+    .hero { padding:60px 24px 40px; }
+    .hero-stats { gap:32px; }
+    .forqui-grid, .learn-grid, .offers-grid, .about-grid { grid-template-columns:1fr; }
+    .offer-card.featured { transform:scale(1); }
+    footer { flex-direction:column; gap:12px; text-align:center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">XL<span>Trading</span></div>
+  <a href="#offres" class="nav-cta">Voir les offres →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">Prop Firms & Futures — Formation Francophone</div>
+  <h1>Trade <em>smarter.</em><br>Get <em>funded.</em></h1>
+  <p class="hero-sub">
+    La première formation francophone complète sur les <strong>marchés futures</strong> et les <strong>prop firms</strong> — du débutant au premier payout, sans bullshit.
+  </p>
+  <div class="hero-ctas">
+    <a href="#offres" class="btn-primary">Voir les offres <span>↓</span></a>
+    <a href="#programme" class="btn-ghost">Le programme</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">4</div>
+      <div class="stat-label">Modules complets</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">12</div>
+      <div class="stat-label">Erreurs à éviter</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Expérience réelle</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">FR</div>
+      <div class="stat-label">Francophone</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee">
+    <span class="marquee-item">Prop Firms</span>
+    <span class="marquee-item">Futures Trading</span>
+    <span class="marquee-item">FundingPips</span>
+    <span class="marquee-item">FTMO</span>
+    <span class="marquee-item">Topstep</span>
+    <span class="marquee-item">Apex Trader</span>
+    <span class="marquee-item">ES & NQ</span>
+    <span class="marquee-item">DAX Futures</span>
+    <span class="marquee-item">Order Flow</span>
+    <span class="marquee-item">Risk Management</span>
+    <span class="marquee-item">Daily Drawdown</span>
+    <span class="marquee-item">Profit Split</span>
+    <span class="marquee-item">Prop Firms</span>
+    <span class="marquee-item">Futures Trading</span>
+    <span class="marquee-item">FundingPips</span>
+    <span class="marquee-item">FTMO</span>
+    <span class="marquee-item">Topstep</span>
+    <span class="marquee-item">Apex Trader</span>
+    <span class="marquee-item">ES & NQ</span>
+    <span class="marquee-item">DAX Futures</span>
+    <span class="marquee-item">Order Flow</span>
+    <span class="marquee-item">Risk Management</span>
+    <span class="marquee-item">Daily Drawdown</span>
+    <span class="marquee-item">Profit Split</span>
+  </div>
+</div>
+
+<!-- POUR QUI -->
+<div style="max-width:1100px;margin:0 auto;">
+<section class="section">
+  <div class="section-label">Pour qui ?</div>
+  <h2 class="section-title">Cette formation est <em>faite pour toi</em> si...</h2>
+  <p class="section-desc">Pas de pré-requis de niveau — juste la volonté de comprendre vraiment comment ça fonctionne.</p>
+  <div class="forqui-grid">
+    <div class="forqui-card">
+      <div class="forqui-icon">🎯</div>
+      <div class="forqui-text">
+        <strong>Tu veux trader avec une prop firm</strong>
+        <span>Tu entends parler de FTMO, FundingPips, Topstep — mais tu ne sais pas par où commencer ni comment choisir.</span>
+      </div>
+    </div>
+    <div class="forqui-card">
+      <div class="forqui-icon">📉</div>
+      <div class="forqui-text">
+        <strong>Tu as déjà brûlé un ou plusieurs challenges</strong>
+        <span>Tu perds du capital sur des règles que tu n'avais pas comprises — daily drawdown, consistency rule, trailing DD.</span>
+      </div>
+    </div>
+    <div class="forqui-card">
+      <div class="forqui-icon">🔄</div>
+      <div class="forqui-text">
+        <strong>Tu viens du Forex et tu veux passer aux Futures</strong>
+        <span>Les futures offrent plus de transparence, une fiscalité avantageuse et une liquidité institutionnelle. Mais ça s'apprend.</span>
+      </div>
+    </div>
+    <div class="forqui-card">
+      <div class="forqui-icon">💡</div>
+      <div class="forqui-text">
+        <strong>Tu veux un revenu complémentaire sérieux</strong>
+        <span>Pas de promesses miracles. Une feuille de route réaliste pour construire un revenu stable sur 12 à 24 mois.</span>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- PROGRAMME -->
+<div class="learn-section" style="width:100%;">
+<div style="max-width:1100px;margin:0 auto;">
+<section class="section" id="programme">
+  <div class="section-label">Le Programme</div>
+  <h2 class="section-title">4 modules.<br><em>Tout ce qu'il faut savoir.</em></h2>
+  <p class="section-desc">Du fonctionnement des prop firms aux premiers payouts — rien n'est laissé de côté.</p>
+  <div class="learn-grid">
+    <div class="learn-item">
+      <div class="learn-num">01</div>
+      <span class="learn-tag">Module 1</span>
+      <h3>Les Prop Firms — Comment ça marche vraiment</h3>
+      <p>Modèle économique, comparatif des firmes (FTMO, FundingPips, Topstep, Apex...), anatomie d'un challenge, drawdown statique vs trailing, comment choisir SA prop firm.</p>
+    </div>
+    <div class="learn-item">
+      <div class="learn-num">02</div>
+      <span class="learn-tag">Module 2</span>
+      <h3>Les Futures — Bases Essentielles</h3>
+      <p>Contrats ES, NQ, DAX, Gold, valeur du tick, sessions de trading, carnet d'ordres (DOM), publications macro à surveiller. Tout ce que le Forex ne t'a pas appris.</p>
+    </div>
+    <div class="learn-item">
+      <div class="learn-num">03</div>
+      <span class="learn-tag">Module 3</span>
+      <h3>Les 12 Erreurs du Débutant</h3>
+      <p>Revenge trading, surexposition, ignorer le daily drawdown, changer de stratégie trop vite... Les 12 erreurs qui détruisent les comptes — et comment les éviter concrètement.</p>
+    </div>
+    <div class="learn-item">
+      <div class="learn-num">04</div>
+      <span class="learn-tag">Module 4</span>
+      <h3>Passer et Gérer son Compte Funded</h3>
+      <p>Stratégie de challenge, calcul du risque optimal, transition vers le funded, payouts, roadmap sur 3 ans. Le plan concret que personne ne te donne.</p>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+
+<!-- OFFRES -->
+<div style="max-width:1100px;margin:0 auto;">
+<section class="section" id="offres">
+  <div class="section-label">Les Offres</div>
+  <h2 class="section-title">Choisis ton <em>niveau</em>.</h2>
+  <p class="section-desc">Une offre pour chaque étape de ton parcours. Tu peux upgrader à tout moment.</p>
+
+  <div class="offers-grid">
+
+    <!-- LEVEL 1 -->
+    <div class="offer-card">
+      <div class="offer-level">Level 01</div>
+      <div class="offer-name">La Formation</div>
+      <div class="offer-desc">Le guide complet en PDF. Tout le savoir, à ton rythme, disponible immédiatement.</div>
+      <div class="offer-price">
+        <span class="price-currency">€</span><span class="price-amount">37</span>
+        <div class="price-note">Paiement unique · Accès immédiat</div>
+      </div>
+      <ul class="offer-features">
+        <li><strong>Guide PDF complet</strong> — 4 modules, 100+ pages</li>
+        <li>Comparatif des prop firms 2025</li>
+        <li>Tableaux futures (tick values, sessions)</li>
+        <li>Les 12 erreurs à éviter</li>
+        <li>Glossaire de 25 termes essentiels</li>
+        <li>Mises à jour incluses</li>
+      </ul>
+      <a href="#" class="btn-offer btn-offer-ghost">Obtenir la formation →</a>
+    </div>
+
+    <!-- LEVEL 2 — FEATURED -->
+    <div class="offer-card featured">
+      <div class="offer-badge">⭐ Le Plus Populaire</div>
+      <div class="offer-level">Level 02</div>
+      <div class="offer-name">Formation + Session Live</div>
+      <div class="offer-desc">La formation complète + une session Q&R en groupe avec Xavier pour aller plus loin.</div>
+      <div class="offer-price">
+        <span class="price-currency">€</span><span class="price-amount">97</span>
+        <div class="price-note">Paiement unique · Sessions mensuelles en groupe</div>
+      </div>
+      <ul class="offer-features">
+        <li><strong>Tout le Level 01</strong> inclus</li>
+        <li><strong>Session Zoom 60 min</strong> en groupe (max 10 personnes)</li>
+        <li>Questions sur ta stratégie & ton challenge</li>
+        <li>Review de setups en direct</li>
+        <li>Accès au groupe Telegram privé</li>
+        <li>Replay de la session disponible</li>
+      </ul>
+      <a href="#" class="btn-offer btn-offer-gold">Je veux cette offre →</a>
+    </div>
+
+    <!-- LEVEL 3 -->
+    <div class="offer-card">
+      <div class="offer-level">Level 03</div>
+      <div class="offer-name">Coaching Individuel</div>
+      <div class="offer-desc">Suivi personnalisé sur 4 semaines. Pour ceux qui veulent aller vite et éviter les erreurs coûteuses.</div>
+      <div class="offer-price">
+        <span class="price-currency">€</span><span class="price-amount">297</span>
+        <div class="price-note">Par mois · Places très limitées</div>
+      </div>
+      <ul class="offer-features">
+        <li><strong>Tout le Level 01 & 02</strong> inclus</li>
+        <li><strong>2 sessions Zoom</strong> individuelles par mois</li>
+        <li>Analyse de ton journal de trading</li>
+        <li>Review de tes setups chaque semaine</li>
+        <li>Support WhatsApp en semaine</li>
+        <li>Plan de trading personnalisé</li>
+        <li>Suivi de ta progression challenge</li>
+      </ul>
+      <a href="#" class="btn-offer btn-offer-ghost">Postuler au coaching →</a>
+    </div>
+
+  </div>
+</section>
+</div>
+
+<!-- À PROPOS -->
+<div style="background:rgba(15,32,64,0.3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+<div style="max-width:1100px;margin:0 auto;">
+<section class="section">
+  <div class="about-grid">
+    <div class="about-visual">
+      <div class="about-avatar">X</div>
+      <div class="about-name">Xavier</div>
+      <div class="about-title-tag">Trader Futures · Coach · Fondateur XL Trading</div>
+      <p style="color:var(--gray);font-size:13px;line-height:1.7;">Basé à Dinant, Belgique<br>Formé à BeTrader Academy (Bruxelles)</p>
+      <div class="about-badges">
+        <span class="badge">BeTrader Academy</span>
+        <span class="badge">Futures</span>
+        <span class="badge">FundingPips</span>
+        <span class="badge">LucidFlex</span>
+        <span class="badge">Order Flow</span>
+      </div>
+    </div>
+    <div class="about-content">
+      <div class="section-label">Qui est Xavier ?</div>
+      <h2 class="section-title">Pas un <em>théoricien.</em><br>Un trader.</h2>
+      <p>J'ai suivi la même route que toi : Forex, indicateurs classiques, challenges échoués, formations décevantes. Jusqu'au jour où j'ai compris que le vrai jeu se joue dans le <strong>carnet d'ordres et les marchés futures</strong>.</p>
+      <p>Formé à <strong>BeTrader Academy à Bruxelles</strong> en scalping futures et order flow, j'ai tradé sur FundingPips et LucidFlex. Ce que je t'enseigne, je l'ai vécu — les victoires comme les erreurs.</p>
+      <ul class="about-checkpoints">
+        <li><span>✦</span> Formation BeTrader Academy (Bruxelles) — Scalping & Order Flow</li>
+        <li><span>✦</span> Expérience sur comptes funded réels (FundingPips, LucidFlex)</li>
+        <li><span>✦</span> Spécialiste Futures : ES, NQ, DAX, Gold</li>
+        <li><span>✦</span> Francophone — Belge — contexte fiscal FR/BE intégré</li>
+      </ul>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+
+<!-- FAQ -->
+<div style="max-width:1100px;margin:0 auto;">
+<section class="section">
+  <div class="section-label">FAQ</div>
+  <h2 class="section-title">Les questions <em>fréquentes.</em></h2>
+  <div class="faq-list">
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Je suis débutant complet. Cette formation est-elle faite pour moi ?
+        <span class="arrow">+</span>
+      </button>
+      <div class="faq-a">Oui. La formation part des bases — qu'est-ce qu'un contrat futures, comment fonctionne une prop firm — et monte progressivement. Aucun prérequis de trading n'est nécessaire, juste de la motivation et de la rigueur.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Quelle est la différence entre le Level 02 et le coaching individuel ?
+        <span class="arrow">+</span>
+      </button>
+      <div class="faq-a">Le Level 02 c'est une session en groupe — tu partages le temps avec d'autres traders, tu poses tes questions, tu écoutes celles des autres (souvent très instructif). Le coaching individuel, c'est 100% centré sur toi : ton journal, tes setups, ta stratégie spécifique. Idéal si tu veux aller vite ou si tu as une situation particulière.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Est-ce que cette formation garantit que je vais passer mon challenge ?
+        <span class="arrow">+</span>
+      </button>
+      <div class="faq-a">Non, et méfie-toi de toute formation qui te garantit ça. Le trading est une activité à risque. Ce que cette formation garantit, c'est que tu comprendras les règles, les mécanismes et les pièges — ce qui augmente significativement tes chances de réussite.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Je suis en Belgique — la partie fiscale me concerne ?
+        <span class="arrow">+</span>
+      </button>
+      <div class="faq-a">Absolument. La formation aborde les spécificités fiscales belges et françaises pour les revenus de prop firms — un point que la quasi-totalité des formations ignorent. Attention : ce n'est pas du conseil fiscal, nous recommandons toujours de consulter un comptable spécialisé.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Les sessions live du Level 02 — c'est quand et comment ?
+        <span class="arrow">+</span>
+      </button>
+      <div class="faq-a">Les sessions ont lieu une fois par mois via Zoom, en soirée (heure belge/française). La date est communiquée à l'avance. Le replay est disponible pour ceux qui ne peuvent pas assister en direct. Maximum 10 participants par session pour que tout le monde puisse poser ses questions.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Je peux passer du Level 01 au Level 02 plus tard ?
+        <span class="arrow">+</span>
+      </button>
+      <div class="faq-a">Oui. Tu paies simplement la différence. Aucune obligation de tout acheter d'un coup — commence par ce qui correspond à ton budget et ton niveau de sérieux du moment.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- CTA FINAL -->
+<div class="cta-final">
+  <div class="section-label" style="justify-content:center;display:flex;">Prêt à te lancer ?</div>
+  <h2>Arrête de brûler<br>des <em>challenges.</em></h2>
+  <p>Rejoins la formation et commence à trader avec les bonnes bases dès aujourd'hui.</p>
+  <div class="disclaimer">
+    ⚠️ Le trading implique un risque de perte. Les résultats passés ne garantissent pas les résultats futurs. Cette formation est un outil pédagogique — pas une promesse de revenus. Tradez avec un capital que vous pouvez vous permettre de perdre.
+  </div>
+  <a href="#offres" class="btn-primary" style="font-size:16px;padding:18px 48px;">Voir les offres ↓</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo-f">XL<span>Trading</span></div>
+  <div>© 2025 XL Trading · Dinant, Belgique · Tous droits réservés</div>
+  <div style="display:flex;gap:24px;">
+    <a href="#" style="color:var(--gray);text-decoration:none;font-size:13px;">Mentions légales</a>
+    <a href="#" style="color:var(--gray);text-decoration:none;font-size:13px;">Contact</a>
+  </div>
+</footer>
+
+<script>
+function toggleFaq(btn) {
+  const answer = btn.nextElementSibling;
+  const isOpen = btn.classList.contains('open');
+  document.querySelectorAll('.faq-q').forEach(b => {
+    b.classList.remove('open');
+    b.nextElementSibling.classList.remove('open');
+  });
+  if (!isOpen) {
+    btn.classList.add('open');
+    answer.classList.add('open');
+  }
+}
+
+// Animate on scroll
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.forqui-card, .learn-item, .offer-card, .faq-item').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
